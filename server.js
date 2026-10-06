@@ -27,7 +27,12 @@ const SUBSCRIPTIONS_FILE = path.join(__dirname, 'subscriptions.json');
 
 // Initialize or load VAPID keys
 let vapidKeys;
-if (fs.existsSync(KEYS_FILE)) {
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  vapidKeys = {
+    publicKey: process.env.VAPID_PUBLIC_KEY,
+    privateKey: process.env.VAPID_PRIVATE_KEY
+  };
+} else if (fs.existsSync(KEYS_FILE)) {
   try {
     vapidKeys = JSON.parse(fs.readFileSync(KEYS_FILE, 'utf-8'));
   } catch (err) {
