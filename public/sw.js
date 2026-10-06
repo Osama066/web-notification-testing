@@ -19,7 +19,7 @@ self.addEventListener('push', (event) => {
     body: 'You have a new update!',
     icon: '/icon.png',
     badge: '/icon.png',
-    url: 'http://localhost:3000'
+    url: '/'
   };
 
   if (event.data) {
@@ -36,14 +36,15 @@ self.addEventListener('push', (event) => {
     badge: data.badge || '/icon.png',
     vibrate: [200, 100, 200],
     data: {
-      url: data.url || 'http://localhost:3000',
+      body: data.body,
+      url: data.url || '/',
       timestamp: data.timestamp || Date.now()
     },
     actions: [
       { action: 'open', title: '👉 Open' },
       { action: 'close', title: '✕ Close' }
     ],
-    requireInteraction: true, // Keep notification visible until user interacts with it
+    requireInteraction: true,
     tag: 'demo-web-push-' + Date.now(),
     renotify: true
   };
@@ -53,7 +54,7 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Handle notification click (when user clicks the notification banner or 'Open' button)
+// Handle notification click
 self.addEventListener('notificationclick', (event) => {
   console.log('[Service Worker] Notification click received:', event.action);
   event.notification.close();
@@ -62,23 +63,36 @@ self.addEventListener('notificationclick', (event) => {
     return;
   }
 
-  const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+  const title = event.notification.title;
+  const body = (event.notification.data && event.notification.data.body) || event.notification.body || '';
+  const timestamp = (event.notification.data && event.notification.data.timestamp) || Date.now();
+
+  const rawUrl = (event.notification.data && event.notification.data.url) || '/';
+  const urlObj = new URL(rawUrl, self.location.origin);
+  urlObj.searchParams.set('notify_title', title);
+  urlObj.searchParams.set('notify_body', body);
+  urlObj.searchParams.set('notify_time', timestamp);
+  const targetUrl = urlObj.href;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // If a tab with this origin is already open, focus it and navigate
+      // If a tab with this origin is already open, focus it and notify
       for (const client of clientList) {
-        if ('focus' in client) {
-          if (client.url.includes(self.location.origin)) {
-            client.focus();
-            if ('navigate' in client) {
-              client.navigate(targetUrl);
-            }
-            return;
+        if ('focus' in client && client.url.includes(self.location.origin)) {
+          client.focus();
+          client.postMessage({
+            type: 'NEW_NOTIFICATION',
+            title,
+            body,
+            timestamp
+          });
+          if ('navigate' in client) {
+            client.navigate(targetUrl);
           }
+          return;
         }
       }
-      // Otherwise, open a new browser tab/window
+      // Otherwise, open a new browser window/tab with the notification params
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }

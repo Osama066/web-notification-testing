@@ -65,6 +65,88 @@ h1 {
   color: #1e293b;
 }
 
+.box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.box-header h2 {
+  margin-bottom: 0;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.btn-text:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2563eb;
+  border-radius: 6px;
+  padding: 12px 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+.message-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.message-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.message-card-time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.message-card-body {
+  font-size: 0.875rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.message-tag {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.empty-state {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 8px 0;
+}
+
 .status-grid {
   display: flex;
   flex-direction: column;

@@ -162,10 +162,95 @@ async function unsubscribeUser() {
   }
 }
 
+// Message Inbox Management
+const messagesList = document.getElementById('messagesList');
+const btnClearMessages = document.getElementById('btnClearMessages');
+
+function getStoredMessages() {
+  try {
+    return JSON.parse(localStorage.getItem('web_push_messages') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveMessages(msgs) {
+  localStorage.setItem('web_push_messages', JSON.stringify(msgs));
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderMessages() {
+  if (!messagesList) return;
+  const msgs = getStoredMessages();
+  if (msgs.length === 0) {
+    messagesList.innerHTML = '<p class="empty-state">No notifications clicked yet. Send a notification from /admin, click the popup, and it will appear here!</p>';
+    return;
+  }
+
+  messagesList.innerHTML = msgs.map(m => {
+    const timeStr = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return `
+      <div class="message-card">
+        <div class="message-card-header">
+          <span class="message-card-title">${escapeHtml(m.title)}</span>
+          <span class="message-card-time">${timeStr}</span>
+        </div>
+        <p class="message-card-body">${escapeHtml(m.body)}</p>
+        <span class="message-tag">🔔 Push Received</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function addReceivedMessage(title, body, timestamp) {
+  const msgs = getStoredMessages();
+  const exists = msgs.some(m => m.timestamp === timestamp && m.title === title);
+  if (!exists) {
+    msgs.unshift({ title, body, timestamp: timestamp || Date.now() });
+    saveMessages(msgs.slice(0, 30));
+    renderMessages();
+  }
+}
+
+function checkIncomingNotificationParams() {
+  const params = new URLSearchParams(window.location.search);
+  const title = params.get('notify_title');
+  const body = params.get('notify_body');
+  const time = parseInt(params.get('notify_time') || Date.now(), 10);
+
+  if (title) {
+    addReceivedMessage(title, body || '', time);
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'NEW_NOTIFICATION') {
+      addReceivedMessage(event.data.title, event.data.body, event.data.timestamp);
+    }
+  });
+}
+
+if (btnClearMessages) {
+  btnClearMessages.addEventListener('click', () => {
+    saveMessages([]);
+    renderMessages();
+  });
+}
+
 btnSubscribe.addEventListener('click', subscribeUser);
 btnUnsubscribe.addEventListener('click', unsubscribeUser);
 
 window.addEventListener('DOMContentLoaded', async () => {
+  renderMessages();
+  checkIncomingNotificationParams();
+
   try {
     const res = await fetch('/api/vapid-public-key');
     const data = await res.json();
