@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User - Allow Notifications</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="top-nav">
+      <strong>User View</strong>
+      <a href="/admin" target="_blank">Open Admin Panel (/admin) →</a>
+    </div>
+
+    <h1>My Demo Website</h1>
+    <p class="subtitle">Subscribe to notifications on this device.</p>
+
+    <div class="box">
+      <h2>Notification Status</h2>
+      <div class="status-grid">
+        <div><strong>Permission:</strong> <span id="statusPermission">Checking...</span></div>
+        <div><strong>Push Subscription:</strong> <span id="statusPush">Checking...</span></div>
+      </div>
+
+      <div class="btn-group">
+        <button id="btnSubscribe" class="btn btn-primary">Allow Notifications</button>
+        <button id="btnUnsubscribe" class="btn btn-secondary" style="display: none;">Unsubscribe</button>
+      </div>
+    </div>
+
+    <div id="notificationLog" class="log-box" style="display: none;"></div>
+
+    <div class="note">
+      <strong>How to test:</strong>
+      <ol>
+        <li>Click <strong>"Allow Notifications"</strong> and select <em>Allow</em> when the browser asks.</li>
+        <li><strong>Close this tab</strong> (or open Instagram / YouTube in another tab).</li>
+        <li>Open <strong><a href="/admin" target="_blank">/admin</a></strong> in another tab or window to send yourself a notification.</li>
+        <li>Your system notification will pop up on your desktop!</li>
+      </ol>
+    </div>
+  </div>
+
+  <script src="/user.js"></script>
+</body>
+</html>

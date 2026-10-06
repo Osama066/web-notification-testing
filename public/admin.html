@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Send Push Notification</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="top-nav">
+      <strong>Admin View</strong>
+      <a href="/" target="_blank">← Open User Page (/)</a>
+    </div>
+
+    <h1>Admin Notification Sender</h1>
+    <p class="subtitle">Broadcast a push notification to all subscribed devices.</p>
+
+    <div class="box">
+      <h2>Audience</h2>
+      <div class="status-grid">
+        <div><strong>Subscribed Devices:</strong> <span id="adminSubCount">0</span></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Send Notification</h2>
+      <form id="adminForm">
+        <div class="field">
+          <label for="adminTitle">Title</label>
+          <input type="text" id="adminTitle" value="🔔 My Demo Website" required>
+        </div>
+
+        <div class="field">
+          <label for="adminBody">Message</label>
+          <input type="text" id="adminBody" value="You have a new notification" required>
+        </div>
+
+        <div class="field">
+          <label for="adminUrl">Open URL on Click</label>
+          <input type="url" id="adminUrl" value="http://localhost:3000">
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" id="btnAdminSend" class="btn btn-primary">
+            Send Notification Now
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div id="adminLog" class="log-box" style="display: none;"></div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
