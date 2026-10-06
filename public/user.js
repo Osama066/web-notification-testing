@@ -30,15 +30,29 @@ function showLog(message, type = 'info') {
 }
 
 function updateUI() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.navigator.standalone === true || 
+                       window.matchMedia('(display-mode: standalone)').matches;
   const isSupported = typeof window !== 'undefined' && 'Notification' in window;
+
+  if (isIOS && !isStandalone) {
+    statusPermission.textContent = 'iOS Restriction';
+    statusPush.textContent = 'Add to Home Screen';
+    btnSubscribe.textContent = 'Tap Share (📤) → Add to Home Screen';
+    btnSubscribe.disabled = true;
+    showLog('📲 <strong>iPhone Notice:</strong> Apple disables web notifications inside Safari / Chrome tabs.<br><br>👉 <strong>How to enable on iPhone:</strong><br>1. Open this link in <strong>Safari</strong>.<br>2. Tap the <strong>Share</strong> button (📤).<br>3. Tap <strong>"Add to Home Screen"</strong> (➕).<br>4. Open the app from your iPhone Home Screen!', 'info');
+    return;
+  }
+
   const permission = isSupported ? Notification.permission : 'Not Supported';
   statusPermission.textContent = permission;
 
   if (!isSupported) {
-    statusPush.textContent = 'Blocked (Requires HTTPS)';
-    btnSubscribe.textContent = 'Notifications Not Supported on HTTP';
+    statusPush.textContent = 'Not Supported';
+    btnSubscribe.textContent = 'Notifications Not Supported';
     btnSubscribe.disabled = true;
-    showLog('⚠️ Mobile browsers block Notifications on plain HTTP (192.168.x.x). To test on mobile, an HTTPS connection is required.', 'error');
+    showLog('⚠️ Notification API is not available in this browser. Please use Google Chrome or Edge.', 'error');
     return;
   }
 
